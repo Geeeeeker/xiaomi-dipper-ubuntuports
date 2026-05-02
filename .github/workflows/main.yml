@@ -25,11 +25,11 @@ jobs:
       - name: Build
         run: |
           sudo apt update
-          sudo apt install mkbootimg bc build-essential ca-certificates cpio curl git kmod libssl-dev sudo unzip wget xz-utils -y --no-install-recommends
-          # 添加 Ubuntu 22.04 的源来安装 python2 和 libtinfo5
+          sudo apt install bc build-essential ca-certificates cpio curl git kmod libssl-dev sudo unzip wget xz-utils -y --no-install-recommends
+          # 添加 Ubuntu 22.04 的源来安装 python2、libtinfo5 和旧版 mkbootimg
           sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu jammy universe" -y
           sudo apt update
-          sudo apt install -y python2 libtinfo5
+          sudo apt install -y python2 libtinfo5 android-tools-mkbootimg
           sudo ln -sf python2.7 /usr/bin/python
           # 移除 Ubuntu 22.04 的源，避免影响后续安装
           sudo add-apt-repository -r "deb http://archive.ubuntu.com/ubuntu jammy universe" -y
