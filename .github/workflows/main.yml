@@ -27,18 +27,19 @@ jobs:
           sudo apt update
           sudo apt install mkbootimg bc build-essential ca-certificates cpio curl git kmod libssl-dev sudo unzip wget xz-utils -y --no-install-recommends
           # 直接从 Ubuntu 22.04 仓库下载并安装 Python 2.7
-          wget http://archive.ubuntu.com/ubuntu/pool/universe/p/python2.7/python2.7-minimal_2.7.18-13ubuntu1.1_amd64.deb
-          wget http://archive.ubuntu.com/ubuntu/pool/universe/p/python2.7/python2.7_2.7.18-13ubuntu1.1_amd64.deb
-          wget http://archive.ubuntu.com/ubuntu/pool/universe/p/python2.7/libpython2.7-minimal_2.7.18-13ubuntu1.1_amd64.deb
-          wget http://archive.ubuntu.com/ubuntu/pool/universe/p/python2.7/libpython2.7-stdlib_2.7.18-13ubuntu1.1_amd64.deb
-          sudo dpkg -i libpython2.7-minimal_2.7.18-13ubuntu1.1_amd64.deb
-          sudo dpkg -i libpython2.7-stdlib_2.7.18-13ubuntu1.1_amd64.deb
-          sudo dpkg -i python2.7-minimal_2.7.18-13ubuntu1.1_amd64.deb
-          sudo dpkg -i python2.7_2.7.18-13ubuntu1.1_amd64.deb
+          PYTHON_VER="2.7.18-13ubuntu1.2"
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/p/python2.7/python2.7-minimal_${PYTHON_VER}_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/p/python2.7/python2.7_${PYTHON_VER}_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/p/python2.7/libpython2.7-minimal_${PYTHON_VER}_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/p/python2.7/libpython2.7-stdlib_${PYTHON_VER}_amd64.deb
+          sudo dpkg -i libpython2.7-minimal_${PYTHON_VER}_amd64.deb
+          sudo dpkg -i libpython2.7-stdlib_${PYTHON_VER}_amd64.deb
+          sudo dpkg -i python2.7-minimal_${PYTHON_VER}_amd64.deb
+          sudo dpkg -i python2.7_${PYTHON_VER}_amd64.deb
           sudo ln -sf python2.7 /usr/bin/python
           # 安装 libtinfo5
-          wget http://archive.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb
-          sudo dpkg -i libtinfo5_6.3-2ubuntu0.1_amd64.deb
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.4-2_amd64.deb
+          sudo dpkg -i libtinfo5_6.4-2_amd64.deb
           ./build.sh
       - name: Upload basic tarball with boot and recovery images
         uses: actions/upload-artifact@v4
