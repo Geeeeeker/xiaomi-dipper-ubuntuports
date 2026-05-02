@@ -16,7 +16,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
@@ -25,24 +25,19 @@ jobs:
       - name: Build
         run: |
           sudo apt update
-          sudo apt install bc build-essential ca-certificates cpio curl git kmod libssl-dev sudo unzip wget xz-utils -y --no-install-recommends
-          # 添加 Ubuntu 22.04 的源来安装 python2、libtinfo5 和旧版 mkbootimg
-          sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu jammy universe" -y
-          sudo apt update
-          sudo apt install -y python2 libtinfo5 android-tools-mkbootimg
+          sudo apt install bc build-essential ca-certificates cpio curl git kmod libssl-dev libtinfo5 python2 sudo unzip wget xz-utils -y --no-install-recommends
+          # 只安装 android-tools-mkbootimg，不要同时安装 mkbootimg
+          sudo apt install android-tools-mkbootimg -y --no-install-recommends
           sudo ln -sf python2.7 /usr/bin/python
-          # 移除 Ubuntu 22.04 的源，避免影响后续安装
-          sudo add-apt-repository -r "deb http://archive.ubuntu.com/ubuntu jammy universe" -y
-          sudo apt update
           ./build.sh
-      - name: Upload basic tarball with boot and recovery images
+      - name: Upload device-specific tarball
         uses: actions/upload-artifact@v4
         with:
-          name: basic-tarball
+          name: device-tarball
           path: out/*
 
   flashable:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: build
     steps:
       - uses: actions/checkout@v4
@@ -58,6 +53,28 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: OTA images
+          path: |
+            out/boot.img
+            out/system.img
+            out/recovery.img
+
+  devel-flashable:
+    runs-on: ubuntu-22.04
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Make devel OTA images
+        run: |
+          sudo apt update
+          sudo apt install -y img2simg jq sudo wget xz-utils
+          DEVICE="$(source deviceinfo && echo $deviceinfo_codename)"
+          ./build/fetch-and-prepare-latest-ota.sh "16.04/arm64/android9/devel" "$DEVICE" ota
+          mkdir -p out/
+          ./build/system-image-from-ota.sh ota/ubuntu_command out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: devel-OTA images
           path: |
             out/boot.img
             out/system.img
