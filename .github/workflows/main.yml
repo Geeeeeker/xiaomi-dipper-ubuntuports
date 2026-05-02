@@ -25,9 +25,17 @@ jobs:
       - name: Build
         run: |
           sudo apt update
-          sudo apt install android-tools-mkbootimg bc build-essential ca-certificates cpio curl git kmod libssl-dev libtinfo5 python2 sudo unzip wget xz-utils -y --no-install-recommends
+          # Ubuntu 24.04 的替代包
+          sudo apt install mkbootimg bc build-essential ca-certificates cpio curl git kmod libssl-dev sudo unzip wget xz-utils -y --no-install-recommends
+          # 手动安装 python2 (如果确实需要)
+          sudo add-apt-repository ppa:deadsnakes/ppa -y
+          sudo apt update
+          sudo apt install python2.7 -y
           sudo ln -sf python2.7 /usr/bin/python
-          ./build.sh
+          # libtinfo5 已被 libtinfo6 取代，如果脚本兼容，创建符号链接
+          sudo ln -sf /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5
+         ./build.sh
+    
       - name: Upload basic tarball with boot and recovery images
         uses: actions/upload-artifact@v4
         with:
